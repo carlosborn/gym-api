@@ -1,0 +1,97 @@
+package com.gym.infra.controllers;
+
+import com.gym.application.dtos.UserIDTO;
+import com.gym.application.dtos.UserODTO;
+import com.gym.application.pageables.DefaultPageModel;
+import com.gym.application.services.UserApplicationService;
+import com.gym.domain.entities.UserEntity;
+import com.gym.domain.entities.UserStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController()
+@RequestMapping("/users")
+public class UserController {
+
+    @Autowired
+    private UserApplicationService userApplicationService;
+
+    @GetMapping("/actives")
+    public ResponseEntity<DefaultPageModel<UserODTO>> getAllActiveUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10", name = "per_page") int perPage
+    ) {
+        Pageable pageable = PageRequest.of(page, perPage);
+        Page<UserEntity> allActiveUsers = this.userApplicationService.getAllByStatus(UserStatus.ACTIVE, pageable);
+        List<UserODTO> allActivesUsersODTO = getUserODTOS(allActiveUsers);
+
+        DefaultPageModel<UserODTO> pagedModel = new DefaultPageModel<>(new PageImpl<>(allActivesUsersODTO, pageable, allActivesUsersODTO.size()));
+
+        return ResponseEntity.status(HttpStatus.OK).body(pagedModel);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserODTO> getById(@PathVariable Long id) {
+        UserEntity userEntity = this.userApplicationService.getUserById(id);
+        UserODTO userODTO = new UserODTO(
+                userEntity.getId(),
+                userEntity.getName(),
+                userEntity.getUsername(),
+                userEntity.getStatus().getId(),
+                userEntity.getCreatedAt(),
+                userEntity.getUpdatedAt());
+        return ResponseEntity.status(HttpStatus.OK).body(userODTO);
+    }
+
+    @GetMapping
+    public ResponseEntity<DefaultPageModel<UserODTO>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10", name = "per_page") int perPage
+    ) {
+        Pageable pageable = PageRequest.of(page, perPage);
+        Page<UserEntity> allUsers = this.userApplicationService.getAll(pageable);
+        List<UserODTO> allUsersODTO = getUserODTOS(allUsers);
+
+        DefaultPageModel<UserODTO> pagedModel = new DefaultPageModel<>(new PageImpl<>(allUsersODTO, pageable, allUsersODTO.size()));
+
+        return ResponseEntity.status(HttpStatus.OK).body(pagedModel);
+    }
+
+    @PostMapping
+    public ResponseEntity<String> createNewUser(@RequestBody @Validated UserIDTO userIDTO) {
+        this.userApplicationService.createUser(userIDTO.name(), userIDTO.username(), userIDTO.password());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody UserIDTO userIDTO) {
+        this.userApplicationService.updateUser(id, userIDTO.name(), userIDTO.password(), UserStatus.getEnum(userIDTO.status()));
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    private List<UserODTO> getUserODTOS(Page<UserEntity> users) {
+        List<UserODTO> usersODTO = new ArrayList<>();
+        for (UserEntity userEntity : users) {
+            usersODTO.add(
+                    new UserODTO(
+                            userEntity.getId(),
+                            userEntity.getName(),
+                            userEntity.getUsername(),
+                            userEntity.getStatus().getId(),
+                            userEntity.getCreatedAt(),
+                            userEntity.getUpdatedAt()));
+        }
+        return usersODTO;
+    }
+}
