@@ -26,7 +26,7 @@ public class DefaultPageModel<T> {
     }
 
     @JsonProperty
-    public List<T> getContent() {
+    public List<T> getData() {
         return page.getContent();
     }
 
