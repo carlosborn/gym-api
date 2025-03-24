@@ -2,9 +2,12 @@ package com.gym.infra.controllers;
 
 import com.gym.application.dtos.UserIDTO;
 import com.gym.application.dtos.UserODTO;
+import com.gym.application.dtos.UserSessionODTO;
 import com.gym.application.pageables.DefaultPageModel;
 import com.gym.application.services.UserApplicationService;
+import com.gym.application.services.UserSessionApplicationService;
 import com.gym.domain.entities.UserEntity;
+import com.gym.domain.entities.UserSessionEntity;
 import com.gym.domain.entities.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController()
@@ -26,6 +30,9 @@ public class UserController {
 
     @Autowired
     private UserApplicationService userApplicationService;
+
+    @Autowired
+    private UserSessionApplicationService userSessionApplicationService;
 
     @GetMapping("/actives")
     public ResponseEntity<DefaultPageModel<UserODTO>> getAllActiveUsers(
@@ -80,6 +87,23 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @GetMapping("/{id}/sessions")
+    public ResponseEntity<DefaultPageModel<UserSessionODTO>> getAllSessionsByUser(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10", name = "per_page") int perPage
+    ) {
+
+        Pageable pageable = PageRequest.of(page, perPage);
+        UserEntity userEntity = this.userApplicationService.getUserById(id);
+        Page<UserSessionEntity> allSessionsUser = this.userSessionApplicationService.getByUser(userEntity, pageable);
+        List<UserSessionODTO> allSessionsUsersODTO = getSessionsUserODTOs(allSessionsUser);
+
+        DefaultPageModel<UserSessionODTO> pagedModel = new DefaultPageModel<>(new PageImpl<>(allSessionsUsersODTO, pageable, allSessionsUsersODTO.size()));
+
+        return ResponseEntity.status(HttpStatus.OK).body(pagedModel);
+    }
+
     private List<UserODTO> getUserODTOS(Page<UserEntity> users) {
         List<UserODTO> usersODTO = new ArrayList<>();
         for (UserEntity userEntity : users) {
@@ -93,5 +117,27 @@ public class UserController {
                             userEntity.getUpdatedAt()));
         }
         return usersODTO;
+    }
+
+    private List<UserSessionODTO> getSessionsUserODTOs(Page<UserSessionEntity> allSessionsUser) {
+        List<UserSessionODTO> usersSessionsODTO = new ArrayList<>();
+        for (UserSessionEntity userSessionEntity : allSessionsUser) {
+
+            UserODTO userODTO = new UserODTO(
+                    userSessionEntity.getUser().getId(),
+                    userSessionEntity.getUser().getName(),
+                    userSessionEntity.getUser().getUsername(),
+                    userSessionEntity.getUser().getStatus().getId(),
+                    userSessionEntity.getUser().getCreatedAt(),
+                    userSessionEntity.getUser().getUpdatedAt()
+            );
+
+            usersSessionsODTO.add(new UserSessionODTO(
+                    userSessionEntity.getId(),
+                    userODTO,
+                    userSessionEntity.getCreatedAt()
+            ));
+        }
+        return usersSessionsODTO;
     }
 }
