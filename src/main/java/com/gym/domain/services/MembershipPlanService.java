@@ -1,6 +1,7 @@
 package com.gym.domain.services;
 
 import com.gym.domain.entities.MembershipPlanEntity;
+import com.gym.domain.entities.MembershipPlanStatus;
 import com.gym.domain.entities.UserEntity;
 import com.gym.infra.repositories.MembershipPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,13 @@ public class MembershipPlanService {
         return this.membershipPlanRepository.findAll(pageable);
     }
 
-    public Optional<MembershipPlanEntity> findById(Long id){
+    public Page<MembershipPlanEntity> findByStatus(Pageable pageable, MembershipPlanStatus membershipPlanStatus) {
+        return this.membershipPlanRepository.findByStatus(pageable, membershipPlanStatus);
+    }
+
+    public Optional<MembershipPlanEntity> findById(Long id) {
         return this.membershipPlanRepository.findById(id);
     }
+
 
 }

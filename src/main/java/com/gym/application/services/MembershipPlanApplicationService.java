@@ -47,6 +47,10 @@ public class MembershipPlanApplicationService {
         return this.membershipPlanService.findAll(pageable);
     }
 
+    public Page<MembershipPlanEntity> getByStatus(Pageable pageable, MembershipPlanStatus membershipPlanStatus) {
+        return this.membershipPlanService.findByStatus(pageable, membershipPlanStatus);
+    }
+
     public MembershipPlanEntity getById(Long id) {
         Optional<MembershipPlanEntity> optional = this.membershipPlanService.findById(id);
 

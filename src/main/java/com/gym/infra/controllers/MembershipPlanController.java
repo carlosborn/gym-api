@@ -8,6 +8,8 @@ import com.gym.application.services.MembershipPlanApplicationService;
 import com.gym.domain.entities.MembershipPlanEntity;
 import com.gym.domain.entities.MembershipPlanStatus;
 import com.gym.domain.exceptions.MembershipPlanNotCreatedException;
+import com.gym.domain.exceptions.MembershipPlanNotUpdatedException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -27,24 +30,25 @@ public class MembershipPlanController {
     @Autowired
     private MembershipPlanApplicationService membershipPlanApplicationService;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @GetMapping
     public ResponseEntity<DefaultPageModel<MembershipPlanODTO>> getAll(@RequestParam(defaultValue = "0") int page,
-                                                                       @RequestParam(defaultValue = "10", name = "per_page") int perPage) {
+                                                                       @RequestParam(defaultValue = "10", name = "per_page") int perPage,
+                                                                       @RequestParam(defaultValue = "-1") int status) {
         Pageable pageable = PageRequest.of(page, perPage);
-        Page<MembershipPlanEntity> allMembershipPlans = this.membershipPlanApplicationService.getAll(pageable);
+
+        Page<MembershipPlanEntity> allMembershipPlans = null;
+        if (status == -1) {
+            allMembershipPlans = this.membershipPlanApplicationService.getAll(pageable);
+        } else {
+            allMembershipPlans = this.membershipPlanApplicationService.getByStatus(pageable, MembershipPlanStatus.getEnum(status));
+        }
 
         List<MembershipPlanODTO> allMembershipPlansODTO = new ArrayList<>();
         for (MembershipPlanEntity membershipPlanEntity : allMembershipPlans) {
-            allMembershipPlansODTO.add(new MembershipPlanODTO(
-                    membershipPlanEntity.getId(),
-                    membershipPlanEntity.getName(),
-                    membershipPlanEntity.getMonthlyFee(),
-                    membershipPlanEntity.getDuration(),
-                    membershipPlanEntity.getStatus().getId(),
-                    membershipPlanEntity.getCreatedAt(),
-                    membershipPlanEntity.getUpdatedAt(),
-                    membershipPlanEntity.getFinishedAt()
-            ));
+            allMembershipPlansODTO.add(this.modelMapper.map(membershipPlanEntity, MembershipPlanODTO.class));
         }
 
         DefaultPageModel<MembershipPlanODTO> pagedModel = new DefaultPageModel<>(new PageImpl<>(allMembershipPlansODTO, pageable, allMembershipPlansODTO.size()));
@@ -56,16 +60,7 @@ public class MembershipPlanController {
     public ResponseEntity<MembershipPlanODTO> getById(@PathVariable Long id) {
         MembershipPlanEntity membershipPlanEntity = this.membershipPlanApplicationService.getById(id);
 
-        MembershipPlanODTO membershipPlanODTO = new MembershipPlanODTO(
-                membershipPlanEntity.getId(),
-                membershipPlanEntity.getName(),
-                membershipPlanEntity.getMonthlyFee(),
-                membershipPlanEntity.getDuration(),
-                membershipPlanEntity.getStatus().getId(),
-                membershipPlanEntity.getCreatedAt(),
-                membershipPlanEntity.getUpdatedAt(),
-                membershipPlanEntity.getFinishedAt()
-        );
+        MembershipPlanODTO membershipPlanODTO = this.modelMapper.map(membershipPlanEntity, MembershipPlanODTO.class);
 
         return ResponseEntity.ok(membershipPlanODTO);
     }
@@ -84,6 +79,24 @@ public class MembershipPlanController {
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateMembershipPlan(@PathVariable Long id, @RequestBody MembershipPlanIDTO membershipPlanIDTO) {
+        MembershipPlanEntity membershipPlan = this.membershipPlanApplicationService.updateMembershipPlan(
+                id,
+                membershipPlanIDTO.name(),
+                membershipPlanIDTO.monthlyFee(),
+                membershipPlanIDTO.duration(),
+                MembershipPlanStatus.getEnum(membershipPlanIDTO.status()),
+                membershipPlanIDTO.finishedAt()
+        );
+
+        if (membershipPlan.getId() == null) {
+            throw new MembershipPlanNotUpdatedException();
+        }
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

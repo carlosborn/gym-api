@@ -9,6 +9,7 @@ import com.gym.application.services.UserSessionApplicationService;
 import com.gym.domain.entities.UserEntity;
 import com.gym.domain.entities.UserSessionEntity;
 import com.gym.domain.entities.UserStatus;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -34,6 +35,9 @@ public class UserController {
     @Autowired
     private UserSessionApplicationService userSessionApplicationService;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @GetMapping("/actives")
     public ResponseEntity<DefaultPageModel<UserODTO>> getAllActiveUsers(
             @RequestParam(defaultValue = "0") int page,
@@ -51,13 +55,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserODTO> getById(@PathVariable Long id) {
         UserEntity userEntity = this.userApplicationService.getUserById(id);
-        UserODTO userODTO = new UserODTO(
-                userEntity.getId(),
-                userEntity.getName(),
-                userEntity.getUsername(),
-                userEntity.getStatus().getId(),
-                userEntity.getCreatedAt(),
-                userEntity.getUpdatedAt());
+        UserODTO userODTO = this.modelMapper.map(userEntity, UserODTO.class);
         return ResponseEntity.status(HttpStatus.OK).body(userODTO);
     }
 
@@ -107,14 +105,7 @@ public class UserController {
     private List<UserODTO> getUserODTOS(Page<UserEntity> users) {
         List<UserODTO> usersODTO = new ArrayList<>();
         for (UserEntity userEntity : users) {
-            usersODTO.add(
-                    new UserODTO(
-                            userEntity.getId(),
-                            userEntity.getName(),
-                            userEntity.getUsername(),
-                            userEntity.getStatus().getId(),
-                            userEntity.getCreatedAt(),
-                            userEntity.getUpdatedAt()));
+            usersODTO.add(this.modelMapper.map(userEntity, UserODTO.class));
         }
         return usersODTO;
     }
@@ -123,20 +114,9 @@ public class UserController {
         List<UserSessionODTO> usersSessionsODTO = new ArrayList<>();
         for (UserSessionEntity userSessionEntity : allSessionsUser) {
 
-            UserODTO userODTO = new UserODTO(
-                    userSessionEntity.getUser().getId(),
-                    userSessionEntity.getUser().getName(),
-                    userSessionEntity.getUser().getUsername(),
-                    userSessionEntity.getUser().getStatus().getId(),
-                    userSessionEntity.getUser().getCreatedAt(),
-                    userSessionEntity.getUser().getUpdatedAt()
-            );
+            // UserODTO userODTO = this.modelMapper.map(userSessionEntity.getUser(), UserODTO.class);
 
-            usersSessionsODTO.add(new UserSessionODTO(
-                    userSessionEntity.getId(),
-                    userODTO,
-                    userSessionEntity.getCreatedAt()
-            ));
+            usersSessionsODTO.add(this.modelMapper.map(userSessionEntity, UserSessionODTO.class));
         }
         return usersSessionsODTO;
     }
