@@ -1,10 +1,13 @@
 package com.gym.infra.controllers;
 
+import com.gym.application.dtos.MembershipPlanIDTO;
 import com.gym.application.dtos.MembershipPlanODTO;
 import com.gym.application.dtos.UserSessionODTO;
 import com.gym.application.pageables.DefaultPageModel;
 import com.gym.application.services.MembershipPlanApplicationService;
 import com.gym.domain.entities.MembershipPlanEntity;
+import com.gym.domain.entities.MembershipPlanStatus;
+import com.gym.domain.exceptions.MembershipPlanNotCreatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -65,6 +68,22 @@ public class MembershipPlanController {
         );
 
         return ResponseEntity.ok(membershipPlanODTO);
+    }
+
+    @PostMapping
+    public ResponseEntity<String> createMembershipPlan(@RequestBody MembershipPlanIDTO membershipPlanIDTO) {
+        MembershipPlanEntity membershipPlan = this.membershipPlanApplicationService.createMembershipPlan(
+                membershipPlanIDTO.name(),
+                membershipPlanIDTO.monthlyFee(),
+                membershipPlanIDTO.duration(),
+                MembershipPlanStatus.ACTIVE
+        );
+
+        if (membershipPlan.getId() == null) {
+            throw new MembershipPlanNotCreatedException();
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }
