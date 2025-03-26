@@ -12,10 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +46,25 @@ public class MembershipPlanController {
 
         DefaultPageModel<MembershipPlanODTO> pagedModel = new DefaultPageModel<>(new PageImpl<>(allMembershipPlansODTO, pageable, allMembershipPlansODTO.size()));
 
-        return ResponseEntity.status(HttpStatus.OK).body(pagedModel);
+        return ResponseEntity.ok(pagedModel);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MembershipPlanODTO> getById(@PathVariable Long id) {
+        MembershipPlanEntity membershipPlanEntity = this.membershipPlanApplicationService.getById(id);
+
+        MembershipPlanODTO membershipPlanODTO = new MembershipPlanODTO(
+                membershipPlanEntity.getId(),
+                membershipPlanEntity.getName(),
+                membershipPlanEntity.getMonthlyFee(),
+                membershipPlanEntity.getDuration(),
+                membershipPlanEntity.getStatus().getId(),
+                membershipPlanEntity.getCreatedAt(),
+                membershipPlanEntity.getUpdatedAt(),
+                membershipPlanEntity.getFinishedAt()
+        );
+
+        return ResponseEntity.ok(membershipPlanODTO);
     }
 
 }

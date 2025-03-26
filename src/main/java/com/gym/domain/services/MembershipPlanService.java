@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class MembershipPlanService {
 
@@ -20,6 +22,10 @@ public class MembershipPlanService {
 
     public Page<MembershipPlanEntity> findAll(Pageable pageable) {
         return this.membershipPlanRepository.findAll(pageable);
+    }
+
+    public Optional<MembershipPlanEntity> findById(Long id){
+        return this.membershipPlanRepository.findById(id);
     }
 
 }
