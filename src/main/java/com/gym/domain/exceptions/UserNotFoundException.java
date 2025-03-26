@@ -1,9 +1,11 @@
 package com.gym.domain.exceptions;
 
-public final class UserNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public final class UserNotFoundException extends CustomException {
 
     public UserNotFoundException() {
-        super("User not found.");
+        super("User not found.", HttpStatus.NOT_FOUND.value());
     }
 
 }

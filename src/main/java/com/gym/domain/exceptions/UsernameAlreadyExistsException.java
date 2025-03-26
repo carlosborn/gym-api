@@ -1,9 +1,11 @@
 package com.gym.domain.exceptions;
 
-public class UsernameAlreadyExistsException extends RuntimeException{
+import org.springframework.http.HttpStatus;
 
-    public UsernameAlreadyExistsException(){
-        super("Username already exists.");
+public class UsernameAlreadyExistsException extends CustomException {
+
+    public UsernameAlreadyExistsException() {
+        super("Username already exists.", HttpStatus.BAD_REQUEST.value());
     }
 
 }
