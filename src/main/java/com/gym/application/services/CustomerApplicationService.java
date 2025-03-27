@@ -30,12 +30,15 @@ public class CustomerApplicationService {
         customerEntity.setBirthDate(birthDate);
         customerEntity.setWeight(weight);
         customerEntity.setHeight(height);
+        customerEntity.setStatus(CustomerStatus.ACTIVE);
+        customerEntity.setCreatedAt(new Date());
+        customerEntity.setUpdatedAt(new Date());
 
         return this.customerService.save(customerEntity);
     }
 
     public CustomerEntity updateCustomer(Long id, String name, String document, CustomerGender customerGender,
-                                         Date birthDate, Double weight, Double height, AddressEntity addressEntity) {
+                                         Date birthDate, Double weight, Double height, CustomerStatus customerStatus, AddressEntity addressEntity) {
 
         CustomerEntity customerEntity = this.getById(id);
         customerEntity.setName(name);
@@ -45,7 +48,14 @@ public class CustomerApplicationService {
         customerEntity.setWeight(weight);
         customerEntity.setHeight(height);
         customerEntity.setAddress(addressEntity);
+        customerEntity.setStatus(customerStatus);
+        customerEntity.setUpdatedAt(new Date());
 
+        return this.customerService.save(customerEntity);
+    }
+
+    public CustomerEntity addCustomerAddress(CustomerEntity customerEntity, AddressEntity addressEntity){
+        customerEntity.setAddress(addressEntity);
         return this.customerService.save(customerEntity);
     }
 

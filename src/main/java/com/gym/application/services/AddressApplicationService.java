@@ -8,6 +8,7 @@ import com.gym.infra.repositories.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -28,6 +29,8 @@ public class AddressApplicationService {
         addressEntity.setState(state);
         addressEntity.setZipcode(zipcode);
         addressEntity.setCustomer(customerEntity);
+        addressEntity.setCreatedAt(new Date());
+        addressEntity.setUpdatedAt(new Date());
 
         return this.addressService.save(addressEntity);
     }
@@ -43,6 +46,7 @@ public class AddressApplicationService {
         addressEntity.setCity(city);
         addressEntity.setState(state);
         addressEntity.setZipcode(zipcode);
+        addressEntity.setUpdatedAt(new Date());
 
         return this.addressService.save(addressEntity);
     }
