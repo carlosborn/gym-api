@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CustomerService {
 
@@ -19,6 +21,10 @@ public class CustomerService {
 
     public Page<CustomerEntity> findAll(Pageable pageable) {
         return this.customerRepository.findAll(pageable);
+    }
+
+    public Optional<CustomerEntity> findById(Long id) {
+        return this.customerRepository.findById(id);
     }
 
 }
