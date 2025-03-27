@@ -3,6 +3,7 @@ package com.gym.application.services;
 import com.gym.domain.entities.AddressEntity;
 import com.gym.domain.entities.CustomerEntity;
 import com.gym.domain.entities.CustomerGender;
+import com.gym.domain.entities.CustomerStatus;
 import com.gym.domain.exceptions.CustomerNotFoundException;
 import com.gym.domain.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class CustomerApplicationService {
         return this.customerService.save(customerEntity);
     }
 
-    public Page<CustomerEntity> getAll(Pageable pageable){
+    public Page<CustomerEntity> getAll(Pageable pageable) {
         return this.customerService.findAll(pageable);
     }
 
@@ -62,7 +63,7 @@ public class CustomerApplicationService {
         return optional.get();
     }
 
-    public CustomerEntity getByDocument(String document){
+    public CustomerEntity getByDocument(String document) {
         Optional<CustomerEntity> optional = this.customerService.findByDocument(document);
 
         if (optional.isEmpty()) {
@@ -70,6 +71,10 @@ public class CustomerApplicationService {
         }
 
         return optional.get();
+    }
+
+    public Page<CustomerEntity> getByStatus(Pageable pageable, CustomerStatus status) {
+        return this.customerService.findByStatus(pageable, status);
     }
 
 }

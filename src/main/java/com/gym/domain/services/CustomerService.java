@@ -1,6 +1,7 @@
 package com.gym.domain.services;
 
 import com.gym.domain.entities.CustomerEntity;
+import com.gym.domain.entities.CustomerStatus;
 import com.gym.infra.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,8 +28,12 @@ public class CustomerService {
         return this.customerRepository.findById(id);
     }
 
-    public Optional<CustomerEntity> findByDocument(String document){
+    public Optional<CustomerEntity> findByDocument(String document) {
         return this.customerRepository.findByDocument(document);
+    }
+
+    public Page<CustomerEntity> findByStatus(Pageable pageable, CustomerStatus status) {
+        return this.customerRepository.findByStatus(pageable, status);
     }
 
 }

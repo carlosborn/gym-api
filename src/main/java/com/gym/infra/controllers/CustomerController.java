@@ -6,6 +6,7 @@ import com.gym.application.pageables.DefaultPageModel;
 import com.gym.application.services.AddressApplicationService;
 import com.gym.application.services.CustomerApplicationService;
 import com.gym.domain.entities.CustomerEntity;
+import com.gym.domain.entities.CustomerStatus;
 import com.gym.domain.entities.MembershipPlanEntity;
 import com.gym.domain.entities.MembershipPlanStatus;
 import org.modelmapper.ModelMapper;
@@ -48,7 +49,7 @@ public class CustomerController {
         if (status == -1) {
             allCustomers = this.customerApplicationService.getAll(pageable);
         } else {
-            // allCustomers = this.customerApplicationService.getByStatus(pageable, MembershipPlanStatus.getEnum(status));
+            allCustomers = this.customerApplicationService.getByStatus(pageable, CustomerStatus.getEnum(status));
         }
 
         List<CustomerODTO> allCustomersODTO = new ArrayList<>();
