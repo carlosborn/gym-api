@@ -1,6 +1,7 @@
 package com.gym.application.config;
 
 import com.gym.application.dtos.UserSessionODTO;
+import com.gym.application.mappers.DefaultModelMapper;
 import com.gym.domain.entities.UserSessionEntity;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -12,15 +13,7 @@ public class ModelMapperConfig {
 
     @Bean
     public ModelMapper modelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
-
-        modelMapper.addMappings(new PropertyMap<UserSessionEntity, UserSessionODTO>() {
-            protected void configure() {
-                map(source.getUser(), destination.getUserODTO());
-            }
-        });
-
-        return modelMapper;
+        return new DefaultModelMapper();
     }
 
 }
