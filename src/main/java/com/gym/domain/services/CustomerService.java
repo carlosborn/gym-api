@@ -27,4 +27,8 @@ public class CustomerService {
         return this.customerRepository.findById(id);
     }
 
+    public Optional<CustomerEntity> findByDocument(String document){
+        return this.customerRepository.findByDocument(document);
+    }
+
 }

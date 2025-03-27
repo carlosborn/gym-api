@@ -6,6 +6,8 @@ import com.gym.domain.entities.CustomerGender;
 import com.gym.domain.exceptions.CustomerNotFoundException;
 import com.gym.domain.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -46,8 +48,22 @@ public class CustomerApplicationService {
         return this.customerService.save(customerEntity);
     }
 
+    public Page<CustomerEntity> getAll(Pageable pageable){
+        return this.customerService.findAll(pageable);
+    }
+
     public CustomerEntity getById(Long id) {
         Optional<CustomerEntity> optional = this.customerService.findById(id);
+
+        if (optional.isEmpty()) {
+            throw new CustomerNotFoundException();
+        }
+
+        return optional.get();
+    }
+
+    public CustomerEntity getByDocument(String document){
+        Optional<CustomerEntity> optional = this.customerService.findByDocument(document);
 
         if (optional.isEmpty()) {
             throw new CustomerNotFoundException();

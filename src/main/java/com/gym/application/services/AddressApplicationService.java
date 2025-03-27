@@ -17,7 +17,7 @@ public class AddressApplicationService {
     private AddressService addressService;
 
     public AddressEntity createAddress(String street, String number, String complement, String neighborhood, String city,
-                                       String zipcode, CustomerEntity customerEntity) {
+                                       String state, String zipcode, CustomerEntity customerEntity) {
 
         AddressEntity addressEntity = new AddressEntity();
         addressEntity.setStreet(street);
@@ -25,6 +25,7 @@ public class AddressApplicationService {
         addressEntity.setComplement(complement);
         addressEntity.setNeighborhood(neighborhood);
         addressEntity.setCity(city);
+        addressEntity.setState(state);
         addressEntity.setZipcode(zipcode);
         addressEntity.setCustomer(customerEntity);
 
@@ -32,7 +33,7 @@ public class AddressApplicationService {
     }
 
     public AddressEntity updateAddress(Long id, String street, String number, String complement, String neighborhood, String city,
-                                       String zipcode) {
+                                       String state, String zipcode) {
 
         AddressEntity addressEntity = this.getById(id);
         addressEntity.setStreet(street);
@@ -40,6 +41,7 @@ public class AddressApplicationService {
         addressEntity.setComplement(complement);
         addressEntity.setNeighborhood(neighborhood);
         addressEntity.setCity(city);
+        addressEntity.setState(state);
         addressEntity.setZipcode(zipcode);
 
         return this.addressService.save(addressEntity);
