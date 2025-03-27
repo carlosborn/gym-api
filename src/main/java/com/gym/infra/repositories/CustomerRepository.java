@@ -12,4 +12,5 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, Long> 
 
     Optional<CustomerEntity> findByDocument(String document);
     Page<CustomerEntity> findByStatus(Pageable pageable, CustomerStatus status);
+    Optional<CustomerEntity> findByAccessCode(Integer accessCode);
 }

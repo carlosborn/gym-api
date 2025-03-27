@@ -3,7 +3,9 @@ package com.gym.domain.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity(name = "customers")
@@ -26,7 +28,7 @@ public class CustomerEntity {
     private CustomerGender gender;
 
     @Column(name = "birth_date")
-    private Date birthDate;
+    private LocalDate birthDate;
 
     @Column
     private Double weight;

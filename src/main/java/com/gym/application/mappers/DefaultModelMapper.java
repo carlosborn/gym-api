@@ -22,7 +22,6 @@ public class DefaultModelMapper extends ModelMapper {
                 map(source.getUser(), destination.getUserODTO());
             }
         });
-
         this.addMappings(new PropertyMap<CustomerEntity, CustomerODTO>() {
             protected void configure() {
                 map(source.getAddress(), destination.getAddress());

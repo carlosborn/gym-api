@@ -36,4 +36,8 @@ public class CustomerService {
         return this.customerRepository.findByStatus(pageable, status);
     }
 
+    public Optional<CustomerEntity> findByAccessCode(Integer accessCode) {
+        return this.customerRepository.findByAccessCode(accessCode);
+    }
+
 }
