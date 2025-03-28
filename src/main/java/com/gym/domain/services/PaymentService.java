@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PaymentService {
@@ -17,6 +18,10 @@ public class PaymentService {
 
     public PaymentEntity save(PaymentEntity paymentEntity) {
         return this.paymentRepository.save(paymentEntity);
+    }
+
+    public Optional<PaymentEntity> findById(Long id) {
+        return this.paymentRepository.findById(id);
     }
 
     public List<PaymentEntity> findByEnrollment(EnrollmentEntity enrollmentEntity) {

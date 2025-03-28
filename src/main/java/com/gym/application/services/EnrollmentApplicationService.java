@@ -3,6 +3,7 @@ package com.gym.application.services;
 import com.gym.domain.entities.CustomerEntity;
 import com.gym.domain.entities.EnrollmentEntity;
 import com.gym.domain.entities.MembershipPlanEntity;
+import com.gym.domain.exceptions.EnrollmentNotFoundException;
 import com.gym.domain.services.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -41,8 +42,14 @@ public class EnrollmentApplicationService {
         return this.enrollmentService.findAll(pageable);
     }
 
-    public Optional<EnrollmentEntity> getById(Long id) {
-        return this.enrollmentService.findById(id);
+    public EnrollmentEntity getById(Long id) {
+        Optional<EnrollmentEntity> optional = this.enrollmentService.findById(id);
+
+        if (optional.isEmpty()) {
+            throw new EnrollmentNotFoundException();
+        }
+
+        return optional.get();
     }
 
     public Page<EnrollmentEntity> getAllCanceled(Pageable pageable) {

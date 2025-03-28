@@ -36,4 +36,7 @@ public class PaymentEntity {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    @Column(name = "paid_at")
+    private Date paidAt;
+
 }
