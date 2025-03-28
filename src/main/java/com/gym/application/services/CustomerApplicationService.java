@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
@@ -26,13 +27,13 @@ public class CustomerApplicationService {
     public CustomerEntity createCustomer(String name, String document, CustomerGender customerGender,
                                          LocalDate birthDate, Double weight, Double height) {
 
-        if (this.customerService.findByDocument(document).isPresent()) {
+        if (this.isDocumentDuplicated(document, null)) {
             throw new DocumentCustomerAlreadyExists();
         }
 
         CustomerEntity customerEntity = new CustomerEntity();
         customerEntity.setName(name);
-        customerEntity.setDocument(document);
+        customerEntity.setDocument(this.cleanDocument(document));
         customerEntity.setGender(customerGender);
         customerEntity.setBirthDate(birthDate);
         customerEntity.setWeight(weight);
@@ -46,29 +47,29 @@ public class CustomerApplicationService {
     }
 
     public CustomerEntity updateCustomer(Long id, String name, String document, CustomerGender customerGender,
-                                         LocalDate birthDate, Double weight, Double height, CustomerStatus customerStatus, AddressEntity addressEntity) {
+                                         LocalDate birthDate, Double weight, Double height, CustomerStatus customerStatus) {
 
-        if (this.customerService.findByDocument(document).isPresent()) {
+        CustomerEntity customerEntity = this.getById(id);
+
+        if (this.isDocumentDuplicated(document, customerEntity)) {
             throw new DocumentCustomerAlreadyExists();
         }
 
-        CustomerEntity customerEntity = this.getById(id);
         customerEntity.setName(name);
-        customerEntity.setDocument(document);
+        customerEntity.setDocument(this.cleanDocument(document));
         customerEntity.setGender(customerGender);
         customerEntity.setBirthDate(birthDate);
         customerEntity.setWeight(weight);
         customerEntity.setHeight(height);
-        customerEntity.setAddress(addressEntity);
         customerEntity.setStatus(customerStatus);
         customerEntity.setUpdatedAt(new Date());
 
         return this.customerService.save(customerEntity);
     }
 
-    public CustomerEntity addCustomerAddress(CustomerEntity customerEntity, AddressEntity addressEntity) {
+    public void addCustomerAddress(CustomerEntity customerEntity, AddressEntity addressEntity) {
         customerEntity.setAddress(addressEntity);
-        return this.customerService.save(customerEntity);
+        this.customerService.save(customerEntity);
     }
 
     public Page<CustomerEntity> getAll(Pageable pageable) {
@@ -106,6 +107,28 @@ public class CustomerApplicationService {
             accessCode = 100000 + random.nextInt(900000);
         } while (this.customerService.findByAccessCode(accessCode).isPresent());
         return accessCode;
+    }
+
+    private boolean isDocumentDuplicated(String document, CustomerEntity customerEntity) {
+        Optional<CustomerEntity> optional = this.customerService.findByDocument(document);
+
+        // Nao achou nenhum cliente com esse documento, permite a alteracao
+        if (optional.isEmpty()) {
+            return false;
+        }
+
+        CustomerEntity customerEntityComparator = optional.get();
+
+        if (customerEntity == null) {
+            return true;
+        }
+
+        // Os IDs do cliente sao iguais, entao permite a alteracao
+        return !Objects.equals(customerEntityComparator.getId(), customerEntity.getId());
+    }
+
+    private String cleanDocument(String document) {
+        return document.replaceAll("[.-]", "");
     }
 
 }

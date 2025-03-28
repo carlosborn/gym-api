@@ -99,6 +99,35 @@ public class CustomerController {
 
         this.customerApplicationService.addCustomerAddress(customerEntity, addressEntity);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateCustomer(@PathVariable Long id, @RequestBody CustomerIDTO customerIDTO) {
+        CustomerEntity customerEntity = this.customerApplicationService.updateCustomer(
+                id,
+                customerIDTO.name(),
+                customerIDTO.document(),
+                CustomerGender.getEnum(customerIDTO.gender()),
+                customerIDTO.birthDate(),
+                customerIDTO.weight(),
+                customerIDTO.height(),
+                CustomerStatus.getEnum(customerIDTO.status())
+        );
+
+        AddressIDTO addressIDTO = customerIDTO.address();
+
+        this.addressApplicationService.updateAddress(
+                customerEntity.getAddress().getId(),
+                addressIDTO.street(),
+                addressIDTO.number(),
+                addressIDTO.complement(),
+                addressIDTO.neighborhood(),
+                addressIDTO.city(),
+                addressIDTO.state(),
+                addressIDTO.zipcode()
+        );
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
