@@ -28,7 +28,7 @@ public class PaymentEntity {
     private PaymentStatus status;
 
     @Column(name = "due_date")
-    private Date dueDate;
+    private LocalDate dueDate;
 
     @Column(name = "created_at")
     private Date createdAt;

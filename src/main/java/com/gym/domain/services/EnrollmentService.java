@@ -41,4 +41,7 @@ public class EnrollmentService {
         return this.enrollmentRepository.findByCustomer(customerEntity, pageable);
     }
 
+    public Optional<EnrollmentEntity> findByCustomerAndCancellationDateIsNull(CustomerEntity customerEntity) {
+        return this.enrollmentRepository.findByCustomerAndCancellationDateIsNull(customerEntity);
+    }
 }

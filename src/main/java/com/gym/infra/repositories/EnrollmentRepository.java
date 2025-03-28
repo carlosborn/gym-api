@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface EnrollmentRepository extends JpaRepository<EnrollmentEntity, Long> {
 
@@ -18,5 +20,7 @@ public interface EnrollmentRepository extends JpaRepository<EnrollmentEntity, Lo
 
     // @Query(value = "SELECT * FROM enrollments e WHERE e.cancellation_date IS NOT NULL", nativeQuery = true)
     Page<EnrollmentEntity> findByCancellationDateIsNotNull(Pageable pageable);
+
+    Optional<EnrollmentEntity> findByCustomerAndCancellationDateIsNull(CustomerEntity customerEntity);
 
 }

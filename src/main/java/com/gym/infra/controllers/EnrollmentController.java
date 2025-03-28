@@ -49,6 +49,10 @@ public class EnrollmentController {
 
     @PostMapping
     public ResponseEntity<String> createEnrollment(@RequestBody EnrollmentIDTO enrollmentIDTO) {
+        this.enrollmentApplicationService.createEnrollment(
+                enrollmentIDTO.customerId(),
+                enrollmentIDTO.membershipPlanId(),
+                enrollmentIDTO.dueDate());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

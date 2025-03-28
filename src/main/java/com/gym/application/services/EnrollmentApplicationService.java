@@ -3,6 +3,7 @@ package com.gym.application.services;
 import com.gym.domain.entities.CustomerEntity;
 import com.gym.domain.entities.EnrollmentEntity;
 import com.gym.domain.entities.MembershipPlanEntity;
+import com.gym.domain.exceptions.CustomerHasActiveEnrollmentException;
 import com.gym.domain.exceptions.EnrollmentNotFoundException;
 import com.gym.domain.services.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
@@ -23,11 +25,18 @@ public class EnrollmentApplicationService {
     private CustomerApplicationService customerApplicationService;
 
     @Autowired
-    MembershipPlanApplicationService membershipPlanApplicationService;
+    private MembershipPlanApplicationService membershipPlanApplicationService;
 
-    public EnrollmentEntity createEnrollment(Long customerId, Long membershipPlanId) {
+    @Autowired
+    private PaymentApplicationService paymentApplicationService;
+
+    public EnrollmentEntity createEnrollment(Long customerId, Long membershipPlanId, LocalDate dueDate) {
         CustomerEntity customerEntity = this.customerApplicationService.getById(customerId);
         MembershipPlanEntity membershipPlanEntity = this.membershipPlanApplicationService.getById(membershipPlanId);
+
+        if (this.enrollmentService.findByCustomerAndCancellationDateIsNull(customerEntity).isPresent()) {
+            throw new CustomerHasActiveEnrollmentException();
+        }
 
         EnrollmentEntity enrollmentEntity = new EnrollmentEntity();
         enrollmentEntity.setCustomer(customerEntity);
@@ -35,7 +44,11 @@ public class EnrollmentApplicationService {
         enrollmentEntity.setMonthlyFee(membershipPlanEntity.getMonthlyFee());
         enrollmentEntity.setCreatedAt(new Date());
 
-        return this.enrollmentService.save(enrollmentEntity);
+        enrollmentEntity = this.enrollmentService.save(enrollmentEntity);
+
+        this.paymentApplicationService.createPayments(enrollmentEntity, dueDate);
+
+        return enrollmentEntity;
     }
 
     public Page<EnrollmentEntity> getAll(Pageable pageable) {

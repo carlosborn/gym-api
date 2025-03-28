@@ -7,7 +7,6 @@ import com.gym.domain.exceptions.PaymentNotCreatedException;
 import com.gym.domain.exceptions.PaymentNotFoundException;
 import com.gym.domain.exceptions.PaymentNotPaidException;
 import com.gym.domain.services.PaymentService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,19 +21,11 @@ public class PaymentApplicationService {
     @Autowired
     private PaymentService paymentService;
 
-    @Autowired
-    private EnrollmentApplicationService enrollmentApplicationService;
-
-    @Autowired
-    private ModelMapper modelMapper;
-
-    public void createPayments(Long enrollmentId, Date firstDueDate) {
-        EnrollmentEntity enrollmentEntity = this.enrollmentApplicationService.getById(enrollmentId);
-
+    public void createPayments(EnrollmentEntity enrollmentEntity, LocalDate firstDueDate) {
         Integer duration = enrollmentEntity.getMembershipPlan().getDuration();
         int enrollmentNumber = 1; // Controla a quantidade de mensalidades geradas
         Double value = enrollmentEntity.getMembershipPlan().getMonthlyFee();
-        Date dueDate = firstDueDate;
+        LocalDate dueDate = firstDueDate;
 
         while (enrollmentNumber <= duration) {
             PaymentEntity paymentEntity = this.createPayment(enrollmentEntity, value, dueDate);
@@ -43,14 +34,13 @@ public class PaymentApplicationService {
             }
 
             // Adiciona 1 mes sobre a data de vencimento
-            LocalDate localDate = LocalDate.ofEpochDay(dueDate.getTime());
-            dueDate = new Date(localDate.plusMonths(1).toEpochDay());
+            dueDate = dueDate.plusMonths(1);
 
             enrollmentNumber++;
         }
     }
 
-    private PaymentEntity createPayment(EnrollmentEntity enrollmentEntity, Double value, Date dueDate) {
+    private PaymentEntity createPayment(EnrollmentEntity enrollmentEntity, Double value, LocalDate dueDate) {
         PaymentEntity paymentEntity = new PaymentEntity();
         paymentEntity.setEnrollment(enrollmentEntity);
         paymentEntity.setStatus(PaymentStatus.PENDING);
@@ -95,8 +85,8 @@ public class PaymentApplicationService {
         return this.paymentService.save(paymentEntity).getStatus() == PaymentStatus.CANCELLED;
     }
 
-    public boolean payAllByEnrollment(Long enrollmentId, Date paidDate) {
-        List<PaymentEntity> payments = this.getByEnrollment(enrollmentId);
+    public boolean payAllByEnrollment(EnrollmentEntity enrollmentEntity, Date paidDate) {
+        List<PaymentEntity> payments = this.getByEnrollment(enrollmentEntity);
         for (PaymentEntity paymentEntity : payments) {
             if (!this.pay(paymentEntity, paidDate)) {
                 throw new PaymentNotPaidException();
@@ -105,8 +95,8 @@ public class PaymentApplicationService {
         return true;
     }
 
-    public boolean cancelAllByEnrollment(Long enrollmentId, Date paidDate) {
-        List<PaymentEntity> payments = this.getByEnrollment(enrollmentId);
+    public boolean cancelAllByEnrollment(EnrollmentEntity enrollmentEntity) {
+        List<PaymentEntity> payments = this.getByEnrollment(enrollmentEntity);
         for (PaymentEntity paymentEntity : payments) {
             if (!this.cancel(paymentEntity)) {
                 throw new PaymentNotPaidException();
@@ -115,8 +105,7 @@ public class PaymentApplicationService {
         return true;
     }
 
-    public List<PaymentEntity> getByEnrollment(Long enrollmentId) {
-        EnrollmentEntity enrollmentEntity = this.enrollmentApplicationService.getById(enrollmentId);
+    public List<PaymentEntity> getByEnrollment(EnrollmentEntity enrollmentEntity) {
         return this.paymentService.findByEnrollment(enrollmentEntity);
     }
 
