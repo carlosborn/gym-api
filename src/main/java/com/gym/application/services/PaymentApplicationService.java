@@ -3,6 +3,7 @@ package com.gym.application.services;
 import com.gym.domain.entities.EnrollmentEntity;
 import com.gym.domain.entities.PaymentEntity;
 import com.gym.domain.entities.PaymentStatus;
+import com.gym.domain.exceptions.PaymentAlreadyPaidException;
 import com.gym.domain.exceptions.PaymentNotCreatedException;
 import com.gym.domain.exceptions.PaymentNotFoundException;
 import com.gym.domain.exceptions.PaymentNotPaidException;
@@ -60,17 +61,24 @@ public class PaymentApplicationService {
         return optional.get();
     }
 
-    public boolean pay(Long id, Date paidAt) {
+    public void pay(Long id, Date paidAt) {
         PaymentEntity paymentEntity = this.getById(id);
-        return this.pay(paymentEntity, paidAt);
+        this.pay(paymentEntity, paidAt);
     }
 
-    public boolean pay(PaymentEntity paymentEntity, Date paidAt) {
+    public void pay(PaymentEntity paymentEntity, Date paidAt) {
+
+        if (paymentEntity.getStatus() == PaymentStatus.PAID) {
+            throw new PaymentAlreadyPaidException();
+        }
+
         paymentEntity.setStatus(PaymentStatus.PAID);
         paymentEntity.setPaidAt(paidAt);
         paymentEntity.setUpdatedAt(new Date());
 
-        return this.paymentService.save(paymentEntity).getPaidAt() != null;
+        if (this.paymentService.save(paymentEntity).getPaidAt() == null) {
+            throw new PaymentNotPaidException();
+        }
     }
 
     public boolean cancel(Long id) {
@@ -88,9 +96,7 @@ public class PaymentApplicationService {
     public boolean payAllByEnrollment(EnrollmentEntity enrollmentEntity, Date paidDate) {
         List<PaymentEntity> payments = this.getByEnrollment(enrollmentEntity);
         for (PaymentEntity paymentEntity : payments) {
-            if (!this.pay(paymentEntity, paidDate)) {
-                throw new PaymentNotPaidException();
-            }
+            this.pay(paymentEntity, paidDate);
         }
         return true;
     }
