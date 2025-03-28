@@ -30,7 +30,7 @@ public class EnrollmentService {
     }
 
     public Page<EnrollmentEntity> findAllCancelled(Pageable pageable) {
-        return this.enrollmentRepository.findAllCancelled(pageable);
+        return this.enrollmentRepository.findByCancellationDateIsNotNull(pageable);
     }
 
     public Page<EnrollmentEntity> findByMembershipPlan(MembershipPlanEntity membershipPlanEntity, Pageable pageable) {

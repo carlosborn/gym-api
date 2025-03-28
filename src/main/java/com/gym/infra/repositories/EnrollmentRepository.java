@@ -6,6 +6,7 @@ import com.gym.domain.entities.MembershipPlanEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -15,6 +16,7 @@ public interface EnrollmentRepository extends JpaRepository<EnrollmentEntity, Lo
 
     Page<EnrollmentEntity> findByMembershipPlan(MembershipPlanEntity membershipPlanEntity, Pageable pageable);
 
-    Page<EnrollmentEntity> findAllCancelled(Pageable pageable);
+    // @Query(value = "SELECT * FROM enrollments e WHERE e.cancellation_date IS NOT NULL", nativeQuery = true)
+    Page<EnrollmentEntity> findByCancellationDateIsNotNull(Pageable pageable);
 
 }
