@@ -32,13 +32,16 @@ public class EmployeeApplicationService {
         return this.employeeService.save(employeeEntity);
     }
 
-    public EmployeeEntity createEmployee(String name, String document, UserEntity userEntity, EmployeeStatus status) {
+    public EmployeeEntity updateEmployee(String name, String document, UserEntity userEntity, EmployeeStatus status) {
         EmployeeEntity employeeEntity = new EmployeeEntity();
         employeeEntity.setName(name);
         employeeEntity.setDocument(document);
-        employeeEntity.setStatus(status);
         employeeEntity.setUser(userEntity);
         employeeEntity.setUpdatedAt(new Date());
+
+        if (status != null) {
+            employeeEntity.setStatus(status);
+        }
 
         return this.employeeService.save(employeeEntity);
     }
