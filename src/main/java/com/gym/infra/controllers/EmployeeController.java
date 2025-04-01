@@ -14,10 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +43,13 @@ public class EmployeeController {
         DefaultPageModel<EmployeeODTO> pagedModel = new DefaultPageModel<>(new PageImpl<>(allEmployeesODTO, pageable, allEmployeesODTO.size()));
 
         return ResponseEntity.ok(pagedModel);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeODTO> getById(@PathVariable Long id) {
+        EmployeeEntity employeeEntity = this.employeeApplicationService.getById(id);
+        EmployeeODTO employeeODTO = this.modelMapper.map(employeeEntity, EmployeeODTO.class);
+        return ResponseEntity.ok(employeeODTO);
     }
 
 }
