@@ -33,9 +33,6 @@ public class EmployeeController {
     private EmployeeApplicationService employeeApplicationService;
 
     @Autowired
-    private UserApplicationService userApplicationService;
-
-    @Autowired
     private ModelMapper modelMapper;
 
     @GetMapping
@@ -64,12 +61,10 @@ public class EmployeeController {
     @PostMapping
     public ResponseEntity<EmployeeODTO> createEmployee(@RequestBody @Validated EmployeeIDTO employeeIDTO) {
 
-        UserEntity userEntity = this.userApplicationService.getUserById(employeeIDTO.userId());
-
         EmployeeEntity employeeEntity = this.employeeApplicationService.createEmployee(
                 employeeIDTO.name(),
                 employeeIDTO.document(),
-                userEntity
+                employeeIDTO.userId()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -78,12 +73,10 @@ public class EmployeeController {
     @PutMapping("/{id}")
     public ResponseEntity<EmployeeODTO> updateEmployee(@RequestBody @Validated EmployeeIDTO employeeIDTO) {
 
-        UserEntity userEntity = this.userApplicationService.getUserById(employeeIDTO.userId());
-
         EmployeeEntity employeeEntity = this.employeeApplicationService.updateEmployee(
                 employeeIDTO.name(),
                 employeeIDTO.document(),
-                userEntity,
+                employeeIDTO.userId(),
                 EmployeeStatus.getEnum(employeeIDTO.status())
         );
 

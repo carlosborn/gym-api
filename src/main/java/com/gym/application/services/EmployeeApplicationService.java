@@ -20,7 +20,13 @@ public class EmployeeApplicationService {
     @Autowired
     private EmployeeService employeeService;
 
-    public EmployeeEntity createEmployee(String name, String document, UserEntity userEntity) {
+    @Autowired
+    private UserApplicationService userApplicationService;
+
+    public EmployeeEntity createEmployee(String name, String document, Long userId) {
+
+        UserEntity userEntity = this.userApplicationService.getUserById(userId);
+
         EmployeeEntity employeeEntity = new EmployeeEntity();
         employeeEntity.setName(name);
         employeeEntity.setDocument(document);
@@ -32,7 +38,10 @@ public class EmployeeApplicationService {
         return this.employeeService.save(employeeEntity);
     }
 
-    public EmployeeEntity updateEmployee(String name, String document, UserEntity userEntity, EmployeeStatus status) {
+    public EmployeeEntity updateEmployee(String name, String document, Long userId, EmployeeStatus status) {
+
+        UserEntity userEntity = this.userApplicationService.getUserById(userId);
+
         EmployeeEntity employeeEntity = new EmployeeEntity();
         employeeEntity.setName(name);
         employeeEntity.setDocument(document);

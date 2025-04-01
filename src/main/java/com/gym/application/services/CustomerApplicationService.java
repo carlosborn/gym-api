@@ -131,4 +131,13 @@ public class CustomerApplicationService {
         return document.replaceAll("[.-]", "");
     }
 
+    public CustomerEntity getByAccessCode(Integer accessCode) {
+        Optional<CustomerEntity> optional = this.customerService.findByAccessCode(accessCode);
+
+        if (optional.isEmpty()) {
+            throw new CustomerNotFoundException();
+        }
+
+        return optional.get();
+    }
 }
