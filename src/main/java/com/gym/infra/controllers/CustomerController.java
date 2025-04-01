@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -74,7 +75,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createCustomer(@RequestBody CustomerIDTO customerIDTO) {
+    public ResponseEntity<String> createCustomer(@RequestBody @Validated CustomerIDTO customerIDTO) {
         CustomerEntity customerEntity = this.customerApplicationService.createCustomer(
                 customerIDTO.name(),
                 customerIDTO.document(),
@@ -103,7 +104,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateCustomer(@PathVariable Long id, @RequestBody CustomerIDTO customerIDTO) {
+    public ResponseEntity<String> updateCustomer(@PathVariable Long id, @RequestBody @Validated CustomerIDTO customerIDTO) {
         CustomerEntity customerEntity = this.customerApplicationService.updateCustomer(
                 id,
                 customerIDTO.name(),
