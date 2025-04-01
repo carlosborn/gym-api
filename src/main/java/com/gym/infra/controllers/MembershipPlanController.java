@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class MembershipPlanController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createMembershipPlan(@RequestBody MembershipPlanIDTO membershipPlanIDTO) {
+    public ResponseEntity<String> createMembershipPlan(@RequestBody @Validated MembershipPlanIDTO membershipPlanIDTO) {
         MembershipPlanEntity membershipPlan = this.membershipPlanApplicationService.createMembershipPlan(
                 membershipPlanIDTO.name(),
                 membershipPlanIDTO.monthlyFee(),

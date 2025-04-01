@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +38,7 @@ public class AuthController {
     private UserSessionApplicationService userSessionApplicationService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginODTO> login(@RequestBody LoginIDTO loginRequest) {
+    public ResponseEntity<LoginODTO> login(@RequestBody @Validated LoginIDTO loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password())
         );
