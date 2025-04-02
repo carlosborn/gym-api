@@ -5,6 +5,7 @@ import com.gym.domain.entities.CustomerEntity;
 import com.gym.domain.exceptions.InvalidAccessCodeException;
 import com.gym.domain.services.CustomerAccessService;
 import com.gym.domain.services.CustomerService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 @Service
+@AllArgsConstructor
 public class CustomerAccessApplicationService {
 
     @Autowired
@@ -32,7 +34,7 @@ public class CustomerAccessApplicationService {
         return this.customerAccessService.findByCustomerAndCreatedAtBetween(customerEntity, start, end, pageable);
     }
 
-    public void validAccessCode(Integer accessCode) {
+    public boolean validAccessCode(Integer accessCode) {
         if (accessCode <= 0) {
             throw new InvalidAccessCodeException();
         }
@@ -40,6 +42,8 @@ public class CustomerAccessApplicationService {
         CustomerEntity customerEntity = this.customerApplicationService.getByAccessCode(accessCode);
 
         CustomerAccessEntity customerAccessEntity = this.createCustomerAccess(customerEntity);
+
+        return customerAccessEntity.getId() != null;
     }
 
     private CustomerAccessEntity createCustomerAccess(CustomerEntity customerEntity) {

@@ -3,6 +3,7 @@ package com.gym.domain.services;
 import com.gym.domain.entities.CustomerEntity;
 import com.gym.domain.entities.CustomerStatus;
 import com.gym.infra.repositories.CustomerRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class CustomerService {
 
     @Autowired

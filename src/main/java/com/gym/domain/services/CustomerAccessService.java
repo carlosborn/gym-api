@@ -3,6 +3,7 @@ package com.gym.domain.services;
 import com.gym.domain.entities.CustomerAccessEntity;
 import com.gym.domain.entities.CustomerEntity;
 import com.gym.infra.repositories.CustomerAccessRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 @Service
+@AllArgsConstructor
 public class CustomerAccessService {
 
     @Autowired

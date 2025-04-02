@@ -7,6 +7,7 @@ import com.gym.domain.entities.CustomerStatus;
 import com.gym.domain.exceptions.CustomerNotFoundException;
 import com.gym.domain.exceptions.DocumentCustomerAlreadyExists;
 import com.gym.domain.services.CustomerService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
+@AllArgsConstructor
 public class CustomerApplicationService {
 
     @Autowired
