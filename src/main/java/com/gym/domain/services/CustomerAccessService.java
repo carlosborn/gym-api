@@ -8,6 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 @Service
 public class CustomerAccessService {
 
@@ -20,6 +23,10 @@ public class CustomerAccessService {
 
     public Page<CustomerAccessEntity> findByCustomer(CustomerEntity customer, Pageable pageable) {
         return this.customerAccessRepository.findByCustomer(customer, pageable);
+    }
+
+    public Page<CustomerAccessEntity> findByCustomerAndCreatedAtBetween(CustomerEntity customer, Date start, Date end, Pageable pageable) {
+        return this.customerAccessRepository.findByCustomerAndCreatedAtBetween(customer, start, end, pageable);
     }
 
 }

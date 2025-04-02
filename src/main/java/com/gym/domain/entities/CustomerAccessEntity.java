@@ -17,7 +17,7 @@ public class CustomerAccessEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "custom_id", referencedColumnName = "id")
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
     @ManyToOne(targetEntity = CustomerEntity.class)
     private CustomerEntity customer;
 

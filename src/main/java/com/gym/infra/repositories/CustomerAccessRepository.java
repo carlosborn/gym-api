@@ -7,9 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 @Repository
 public interface CustomerAccessRepository extends JpaRepository<CustomerAccessEntity, Long> {
 
     Page<CustomerAccessEntity> findByCustomer(CustomerEntity customer, Pageable pageable);
+
+    Page<CustomerAccessEntity> findByCustomerAndCreatedAtBetween(CustomerEntity customerEntity, Date start, Date end, Pageable pageable);
 
 }

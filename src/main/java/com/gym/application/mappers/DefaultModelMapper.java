@@ -1,13 +1,7 @@
 package com.gym.application.mappers;
 
-import com.gym.application.dtos.AddressODTO;
-import com.gym.application.dtos.CustomerODTO;
-import com.gym.application.dtos.EnrollmentODTO;
-import com.gym.application.dtos.UserSessionODTO;
-import com.gym.domain.entities.AddressEntity;
-import com.gym.domain.entities.CustomerEntity;
-import com.gym.domain.entities.EnrollmentEntity;
-import com.gym.domain.entities.UserSessionEntity;
+import com.gym.application.dtos.*;
+import com.gym.domain.entities.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 
@@ -33,6 +27,11 @@ public class DefaultModelMapper extends ModelMapper {
             protected void configure() {
                 map(source.getCustomer(), destination.getCustomer());
                 map(source.getMembershipPlan(), destination.getMembershipPlan());
+            }
+        });
+        this.addMappings(new PropertyMap<CustomerAccessEntity, CustomerAccessODTO>() {
+            protected void configure() {
+                map(source.getCustomer(), destination.getCustomer());
             }
         });
     }
