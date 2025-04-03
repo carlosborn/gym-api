@@ -4,7 +4,9 @@ import com.gym.domain.entities.EmployeeEntity;
 import com.gym.domain.entities.EmployeeStatus;
 import com.gym.domain.entities.UserEntity;
 import com.gym.domain.exceptions.EmployeeNotFoundException;
+import com.gym.domain.exceptions.InvalidDocumentException;
 import com.gym.domain.services.EmployeeService;
+import com.gym.infra.helpers.DocumentHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +29,11 @@ public class EmployeeApplicationService {
 
         UserEntity userEntity = this.userApplicationService.getUserById(userId);
 
+        document = DocumentHelper.cleanDocument(document);
+        if (!DocumentHelper.isDocumentValid(document)) {
+            throw new InvalidDocumentException();
+        }
+
         EmployeeEntity employeeEntity = new EmployeeEntity();
         employeeEntity.setName(name);
         employeeEntity.setDocument(document);
@@ -41,6 +48,11 @@ public class EmployeeApplicationService {
     public EmployeeEntity updateEmployee(String name, String document, Long userId, EmployeeStatus status) {
 
         UserEntity userEntity = this.userApplicationService.getUserById(userId);
+
+        document = DocumentHelper.cleanDocument(document);
+        if (!DocumentHelper.isDocumentValid(document)) {
+            throw new InvalidDocumentException();
+        }
 
         EmployeeEntity employeeEntity = new EmployeeEntity();
         employeeEntity.setName(name);

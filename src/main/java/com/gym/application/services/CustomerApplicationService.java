@@ -6,7 +6,9 @@ import com.gym.domain.entities.CustomerGender;
 import com.gym.domain.entities.CustomerStatus;
 import com.gym.domain.exceptions.CustomerNotFoundException;
 import com.gym.domain.exceptions.DocumentCustomerAlreadyExists;
+import com.gym.domain.exceptions.InvalidDocumentException;
 import com.gym.domain.services.CustomerService;
+import com.gym.infra.helpers.DocumentHelper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,9 +35,14 @@ public class CustomerApplicationService {
             throw new DocumentCustomerAlreadyExists();
         }
 
+        document = DocumentHelper.cleanDocument(document);
+        if (!DocumentHelper.isDocumentValid(document)) {
+            throw new InvalidDocumentException();
+        }
+
         CustomerEntity customerEntity = new CustomerEntity();
         customerEntity.setName(name);
-        customerEntity.setDocument(this.cleanDocument(document));
+        customerEntity.setDocument(document);
         customerEntity.setGender(customerGender);
         customerEntity.setBirthDate(birthDate);
         customerEntity.setWeight(weight);
@@ -57,8 +64,13 @@ public class CustomerApplicationService {
             throw new DocumentCustomerAlreadyExists();
         }
 
+        document = DocumentHelper.cleanDocument(document);
+        if (!DocumentHelper.isDocumentValid(document)) {
+            throw new InvalidDocumentException();
+        }
+
         customerEntity.setName(name);
-        customerEntity.setDocument(this.cleanDocument(document));
+        customerEntity.setDocument(document);
         customerEntity.setGender(customerGender);
         customerEntity.setBirthDate(birthDate);
         customerEntity.setWeight(weight);
@@ -127,10 +139,6 @@ public class CustomerApplicationService {
 
         // Os IDs do cliente sao iguais, entao permite a alteracao
         return !Objects.equals(customerEntityComparator.getId(), customerEntity.getId());
-    }
-
-    private String cleanDocument(String document) {
-        return document.replaceAll("[.-]", "");
     }
 
     public CustomerEntity getByAccessCode(Integer accessCode) {
