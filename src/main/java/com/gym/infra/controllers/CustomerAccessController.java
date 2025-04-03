@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gym.application.dtos.CustomerAccessIDTO;
 import com.gym.application.dtos.CustomerAccessODTO;
+import com.gym.application.dtos.CustomerAccessStatisticODTO;
 import com.gym.application.pageables.DefaultPageModel;
 import com.gym.application.services.CustomerAccessApplicationService;
+import com.gym.domain.beans.CustomerAccessStatisticBean;
 import com.gym.domain.entities.CustomerAccessEntity;
 import com.gym.infra.helpers.DateHelper;
 import org.modelmapper.ModelMapper;
@@ -81,6 +83,21 @@ public class CustomerAccessController {
     public ResponseEntity<String> access(@RequestBody @Validated CustomerAccessIDTO customerAccessIDTO) {
         this.customerAccessApplicationService.validAccessCode(customerAccessIDTO.accessCode());
         return ResponseEntity.ok("");
+    }
+
+    @GetMapping("/{customerId}/start_date/{startDate}/final_date/{finalDate}/statistics")
+    public ResponseEntity<CustomerAccessStatisticODTO> getAllByCustomerAndBetweenDates(
+            @PathVariable Long customerId,
+            @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date finalDate) {
+
+        startDate = DateHelper.atStartOfDay(startDate);
+        finalDate = DateHelper.atEndOfDay(finalDate);
+        CustomerAccessStatisticBean statistic = this.customerAccessApplicationService.getAccessesStatisticsByCustomerAndRangeDates(customerId, startDate, finalDate);
+
+        CustomerAccessStatisticODTO customerODTO = this.modelMapper.map(statistic, CustomerAccessStatisticODTO.class);
+
+        return ResponseEntity.ok(customerODTO);
     }
 
 }

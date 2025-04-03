@@ -1,5 +1,6 @@
 package com.gym.domain.services;
 
+import com.gym.domain.beans.CustomerAccessStatisticBean;
 import com.gym.domain.entities.CustomerAccessEntity;
 import com.gym.domain.entities.CustomerEntity;
 import com.gym.infra.repositories.CustomerAccessRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -29,6 +31,10 @@ public class CustomerAccessService {
 
     public Page<CustomerAccessEntity> findByCustomerAndCreatedAtBetween(CustomerEntity customer, Date start, Date end, Pageable pageable) {
         return this.customerAccessRepository.findByCustomerAndCreatedAtBetween(customer, start, end, pageable);
+    }
+
+    public List<CustomerAccessEntity> findByCustomerAndCreatedAtBetween(CustomerEntity customer, Date start, Date end) {
+        return this.customerAccessRepository.findByCustomerAndCreatedAtBetween(customer, start, end);
     }
 
 }

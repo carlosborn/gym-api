@@ -1,6 +1,7 @@
 package com.gym.application.mappers;
 
 import com.gym.application.dtos.*;
+import com.gym.domain.beans.CustomerAccessStatisticBean;
 import com.gym.domain.entities.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -30,6 +31,11 @@ public class DefaultModelMapper extends ModelMapper {
             }
         });
         this.addMappings(new PropertyMap<CustomerAccessEntity, CustomerAccessODTO>() {
+            protected void configure() {
+                map(source.getCustomer(), destination.getCustomer());
+            }
+        });
+        this.addMappings(new PropertyMap<CustomerAccessStatisticBean, CustomerAccessStatisticODTO>() {
             protected void configure() {
                 map(source.getCustomer(), destination.getCustomer());
             }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface CustomerAccessRepository extends JpaRepository<CustomerAccessEntity, Long> {
@@ -16,5 +17,7 @@ public interface CustomerAccessRepository extends JpaRepository<CustomerAccessEn
     Page<CustomerAccessEntity> findByCustomer(CustomerEntity customer, Pageable pageable);
 
     Page<CustomerAccessEntity> findByCustomerAndCreatedAtBetween(CustomerEntity customerEntity, Date start, Date end, Pageable pageable);
+
+    List<CustomerAccessEntity> findByCustomerAndCreatedAtBetween(CustomerEntity customerEntity, Date start, Date end);
 
 }
